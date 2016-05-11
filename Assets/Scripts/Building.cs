@@ -7,7 +7,7 @@ public class Building : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		UpdateMesh (vertices);
+		UpdateMesh ();
 	}
 	
 	// Update is called once per frame
@@ -15,7 +15,7 @@ public class Building : MonoBehaviour {
 	
 	}
 
-	public void UpdateMesh(Vector2[] vertices) {
+	public void UpdateMesh() {
 		MeshFilter mf = GetComponent<MeshFilter> ();
 		Mesh mesh = new Mesh ();
 		mf.mesh = mesh;
