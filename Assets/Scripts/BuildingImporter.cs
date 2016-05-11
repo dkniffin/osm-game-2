@@ -5,19 +5,9 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using ActionStreetMap.Maps.Data.Import;
-using ActionStreetMap.Maps.Entities;
-using ActionStreetMap.Maps.Formats;
-using ActionStreetMap.Maps.Formats.Xml;
-using OSMGame;
 using SimpleJSON;
-using ActionStreetMap.Explorer.Infrastructure;
 using System.Diagnostics;
-using ActionStreetMap.Explorer.Scene.Terrain;
-using ActionStreetMap.Core.Geometry.Triangle.Geometry;
-using ActionStreetMap.Core.Geometry.Clipping;
-using ActionStreetMap.Core;
-using ActionStreetMap.Core.Geometry;
+using OSM;
 
 public class BuildingImporter : MonoBehaviour {
 	public GameObject prefab;
@@ -25,30 +15,43 @@ public class BuildingImporter : MonoBehaviour {
 	public float width = 100f;
 	public float height = 50f;
 
-	private InMemoryIndexBuilder osm;
+//	private InMemoryIndexBuilder osm;
 
 	private string _xmlContent;
-	private ReaderContext _context;
-	private XmlApiReader _reader;
 
+	private Dictionary<long, Node> nodes;
+	private Dictionary<long, Way> ways;
+	private List<Building> buildings;
+	private LatLonBounds bounds;
 
-//	private XmlReader _reader;
-//	private Element _currentElement;
+	private XmlReader _reader;
+	private Element _currentElement;
 
 
 	// Use this for initialization
 	void Start () {
+		nodes = new Dictionary<long, Node> ();
+		ways = new Dictionary<long, Way>();
+		buildings = new List<Building>();
+		bounds = new LatLonBounds();
+
 		ImportOSMData ();
-//		Vector2[] vertices = new Vector2[] {
-//			new Vector2(0, 0),
-//			new Vector2(0, height),
-//			new Vector2(width, height),
-//			new Vector2(width, 0)
-//		};
+		foreach (Way way in ways.Values) {
+			if (!way.HasTag("building")) { 
+				continue;
+			}
+			GameObject buildingObject = (GameObject)Instantiate (prefab, new Vector3(0, 0, 0), Quaternion.identity);
+			Building b = buildingObject.GetComponent<Building> ();
+			b.vertices = way.BuildVertices(bounds).ToArray();
+			buildings.Add (b);
+		}
+
+//		var vertices = ways[27473106].BuildVertices(bounds);
 //		GameObject buildingObject = (GameObject)Instantiate (prefab, new Vector3(0, 0, 0), Quaternion.identity);
 //		Building b = buildingObject.GetComponent<Building> ();
-//		b.vertices = vertices;
+//		b.vertices = vertices.ToArray();
 //		buildings.Add (b);
+
 	}
 	
 	// Update is called once per frame
@@ -57,60 +60,91 @@ public class BuildingImporter : MonoBehaviour {
 	}
 
 	private void ImportOSMData() {
-		_xmlContent = File.ReadAllText("Assets/atc.osm");
-		
+		_xmlContent = File.ReadAllText ("Assets/atc.osm");
+		_reader = XmlReader.Create (new StringReader (_xmlContent));
 
-		var settings = new IndexSettings();
-		string _jsonContent = JSON.Parse (File.ReadAllText (@"Assets/config.json"));
-		settings.ReadFromJson (_jsonContent);
-
-		BoundingBox bbox = new BoundingBox(new GeoCoordinate(35.999148, -78.912091), new GeoCoordinate(35.988905, -78.897436));
-		osm = new InMemoryIndexBuilder(bbox, settings, new ObjectPool(), new UnityConsoleTrace());
-		_reader = new XmlApiReader ();
-
-		_context = new ReaderContext {
-			SourceStream = new MemoryStream(Encoding.UTF8.GetBytes(_xmlContent)),
-			Builder = osm,
-			ReuseEntities = false,
-			SkipTags = false
-		};
-
-		_reader.Read(_context);
-
-		print (osm.Tree);
-
-
-//		XmlReader reader = XmlReader.Create (new StringReader (osmData));
-//
-//		while (reader.Read ()) {
-//			if (reader.NodeType == XmlNodeType.Element) {
-//				switch (reader.Name) {
-//				case "node":
-//					parseNode ();
-//					break;
-//				case "tag":
-//					ParseTag ();
-//					break;
-//				case "nd":
-//					ParseNd ();
-//					break;
-//				case "way":
-//					ParseWay ();
-//					break;
+		while (_reader.Read ()) {
+			if (_reader.NodeType == XmlNodeType.Element) {
+				switch (_reader.Name) {
+				case "node":
+					parseNode ();
+					break;
+				case "tag":
+					ParseTag ();
+					break;
+				case "nd":
+					ParseNd ();
+					break;
+				case "way":
+					ParseWay ();
+					break;
 //				case "relation":
 //					ParseRelation ();
 //					break;
 //				case "member":
 //					ParseMember ();
 //					break;
-//				case "bounds":
-//					ParseBounds ();
-//					break;
-//				}
-//			}
-//		}
-
+				case "bounds":
+					ParseBounds ();
+					break;
+				}
+			}
+		}
 
 	}
+
+	private void parseNode() {
+		Node node = new Node ();
+		node.id = long.Parse(_reader.GetAttribute("id"));
+		node.latitude = float.Parse(_reader.GetAttribute("lat"));
+		node.longitude = float.Parse(_reader.GetAttribute("lon"));
+		_currentElement = node;
+		nodes[node.id] = node;
+	}
+
+	private void ParseWay() {
+		Way way = new Way ();
+		way.id = long.Parse(_reader.GetAttribute("id"));
+		_currentElement = way;
+		ways[way.id] = way;
+	}
+
+	private void ParseNd() {
+		long node_id = long.Parse(_reader.GetAttribute("ref"));
+		Node node = nodes [node_id];
+		(_currentElement as Way).AddNode(node);
+	}
+
+	private void ParseTag() {
+		var key = _reader.GetAttribute("k");
+		var value = _reader.GetAttribute("v");
+		_currentElement.tags[key] = value;
+	}
+
+	private void ParseBounds() {
+		bounds.minlat = double.Parse(_reader.GetAttribute("minlat"));
+		bounds.maxlat = double.Parse(_reader.GetAttribute("maxlat"));
+		bounds.minlon = double.Parse(_reader.GetAttribute("minlon"));
+		bounds.maxlon = double.Parse(_reader.GetAttribute("maxlon"));
+	}
+
+	//		var settings = new IndexSettings();
+	//		JSONNode _jsonContent = JSON.Parse (File.ReadAllText (@"Assets/config.json"));
+	//		settings.ReadFromJson (_jsonContent);
+	//
+	//		BoundingBox bbox = new BoundingBox(new GeoCoordinate(35.999148, -78.912091), new GeoCoordinate(35.988905, -78.897436));
+	//		osm = new InMemoryIndexBuilder(bbox, settings, new ObjectPool(), new UnityConsoleTrace());
+	//		_reader = new XmlApiReader ();
+	//
+	//		_context = new ReaderContext {
+	//			SourceStream = new MemoryStream(Encoding.UTF8.GetBytes(_xmlContent)),
+	//			Builder = osm,
+	//			ReuseEntities = false,
+	//			SkipTags = false
+	//		};
+	//
+	//		_reader.Read(_context);
+	//
+	//		print (osm.Tree);
 
 }
