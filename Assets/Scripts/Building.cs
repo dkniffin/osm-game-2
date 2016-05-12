@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using OSM;
 
 public class Building : MonoBehaviour {
 
 	public Vector2[] vertices;
+	public Way way;
 
 	// Use this for initialization
 	void Start () {
@@ -15,10 +17,16 @@ public class Building : MonoBehaviour {
 	
 	}
 
+	void OnMouseDown () {
+		Debug.Log ("clicked way" + way.id);
+	}
+
 	public void UpdateMesh() {
 		MeshFilter mf = GetComponent<MeshFilter> ();
+		PolygonCollider2D c = GetComponent<PolygonCollider2D> ();
 		Mesh mesh = new Mesh ();
 		mf.mesh = mesh;
+		c.points = vertices;
 
 		Vector3[] mesh_vertices = new Vector3[vertices.Length];
 		Vector3[] normals = new Vector3[vertices.Length];

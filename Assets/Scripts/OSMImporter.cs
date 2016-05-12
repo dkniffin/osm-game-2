@@ -116,6 +116,7 @@ public class OSMImporter : MonoBehaviour {
 			}
 			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 			Building b = buildingObject.GetComponent<Building> ();
+			b.way = way;
 			b.vertices = way.BuildVertices(bounds).ToArray();
 			buildings.Add (b);
 		}
