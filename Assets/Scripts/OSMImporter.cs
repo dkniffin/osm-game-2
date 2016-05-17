@@ -33,9 +33,9 @@ public class OSMImporter : MonoBehaviour {
 		// Draw the scene
 		DrawBuildings ();
 	}
-	
+
 	void Update () {
-	
+
 	}
 
 	private void ImportOSMData() {
@@ -111,7 +111,7 @@ public class OSMImporter : MonoBehaviour {
 
 	private void DrawBuildings() {
 		foreach (Way way in ways.Values) {
-			if (!way.HasTag("building")) { 
+			if (!way.HasTag("building")) {
 				continue;
 			}
 			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, new Vector3(0, 0, 0), Quaternion.identity);

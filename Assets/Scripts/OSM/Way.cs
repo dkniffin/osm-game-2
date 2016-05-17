@@ -37,6 +37,18 @@ namespace OSM {
 
 			return vertices;
 		}
+
+		public string BuildingType() {
+			if (HasTag ("amenity", "police")) {
+				return "police";
+			} else if (HasTag ("amenity", "fire_station")) {
+				return "fire_department";
+			} else if (HasTag ("amenity", new[]{"hospital", "doctors", "dentist", "clinic", "pharmacy", "veterinary"})) {
+				return "medical";
+			} else {
+				return "unknown";
+			}
+		}
 			
 		private double DistanceBetween(double lat1, double lon1, double lat2, double lon2) {
 			var earthRadius = 6378137; // earth radius in meters

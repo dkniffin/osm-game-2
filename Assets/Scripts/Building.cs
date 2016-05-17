@@ -1,20 +1,28 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using OSM;
 
 public class Building : MonoBehaviour {
 
 	public Vector2[] vertices;
 	public Way way;
+	private MeshFilter meshFilter;
+	private PolygonCollider2D polyCollider;
+	private MeshRenderer meshRenderer;
 
 	// Use this for initialization
 	void Start () {
+		meshFilter = GetComponent<MeshFilter> ();
+		polyCollider = GetComponent<PolygonCollider2D> ();
+		meshRenderer = GetComponent<MeshRenderer> ();
 		UpdateMesh ();
+		UpdateMaterial ();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-	
+
 	}
 
 	void OnMouseDown () {
@@ -22,11 +30,9 @@ public class Building : MonoBehaviour {
 	}
 
 	public void UpdateMesh() {
-		MeshFilter mf = GetComponent<MeshFilter> ();
-		PolygonCollider2D c = GetComponent<PolygonCollider2D> ();
 		Mesh mesh = new Mesh ();
-		mf.mesh = mesh;
-		c.points = vertices;
+		meshFilter.mesh = mesh;
+		polyCollider.points = vertices;
 
 		Vector3[] mesh_vertices = new Vector3[vertices.Length];
 		Vector3[] normals = new Vector3[vertices.Length];
@@ -46,5 +52,15 @@ public class Building : MonoBehaviour {
 		mesh.vertices = mesh_vertices;
 		mesh.triangles = indices;
 		mesh.normals = normals;
+	}
+
+	private void UpdateMaterial() {
+		Dictionary<string, Material> materialMap = new Dictionary<string, Material>{
+			{ "police", (Material)  Resources.Load ("Materials/Building/PoliceStation") },
+			{ "fire_department", (Material) Resources.Load ("Materials/Building/FireStation") },
+			{ "medical", (Material) Resources.Load ("Materials/Building/medical") },
+			{ "unknown", (Material) Resources.Load ("Materials/Building/Default") }
+		};
+		meshRenderer.material = materialMap [way.BuildingType ()];
 	}
 }
