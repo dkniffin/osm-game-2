@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using OSM;
 
 public class Building : MonoBehaviour {
-
 	public Vector2[] vertices;
 	public Way way;
 	private MeshFilter meshFilter;
@@ -18,11 +17,6 @@ public class Building : MonoBehaviour {
 		meshRenderer = GetComponent<MeshRenderer> ();
 		UpdateMesh ();
 		UpdateMaterial ();
-	}
-
-	// Update is called once per frame
-	void Update () {
-
 	}
 
 	void OnMouseDown () {

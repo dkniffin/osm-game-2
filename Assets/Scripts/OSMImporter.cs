@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Collections.Generic;
-using SimpleJSON;
 using System.Diagnostics;
 using OSM;
 
@@ -13,15 +12,8 @@ public class OSMImporter : MonoBehaviour {
 	private GameObject buildingPrefab;
 
 	private string _xmlContent;
-
-	private Dictionary<long, Node> nodes = new Dictionary<long, Node> ();
-	private Dictionary<long, Way> ways = new Dictionary<long, Way>();
-	private List<Building> buildings = new List<Building>();
-	private LatLonBounds bounds = new LatLonBounds();
-
 	private XmlReader _reader;
 	private Element _currentElement;
-
 
 	void Start () {
 		// Set up prefabs
@@ -32,10 +24,6 @@ public class OSMImporter : MonoBehaviour {
 
 		// Draw the scene
 		DrawBuildings ();
-	}
-
-	void Update () {
-
 	}
 
 	private void ImportOSMData() {
@@ -80,19 +68,19 @@ public class OSMImporter : MonoBehaviour {
 		node.latitude = float.Parse(_reader.GetAttribute("lat"));
 		node.longitude = float.Parse(_reader.GetAttribute("lon"));
 		_currentElement = node;
-		nodes[node.id] = node;
+		OSMData.Instance.AddNode (node);
 	}
 
 	private void ParseWay() {
 		Way way = new Way ();
 		way.id = long.Parse(_reader.GetAttribute("id"));
 		_currentElement = way;
-		ways[way.id] = way;
+		OSMData.Instance.AddWay(way);
 	}
 
 	private void ParseNd() {
 		long node_id = long.Parse(_reader.GetAttribute("ref"));
-		Node node = nodes [node_id];
+		Node node = OSMData.Instance.GetNodeById(node_id);
 		(_currentElement as Way).AddNode(node);
 	}
 
@@ -103,22 +91,24 @@ public class OSMImporter : MonoBehaviour {
 	}
 
 	private void ParseBounds() {
-		bounds.minlat = double.Parse(_reader.GetAttribute("minlat"));
-		bounds.maxlat = double.Parse(_reader.GetAttribute("maxlat"));
-		bounds.minlon = double.Parse(_reader.GetAttribute("minlon"));
-		bounds.maxlon = double.Parse(_reader.GetAttribute("maxlon"));
+		var n = double.Parse(_reader.GetAttribute("maxlat"));
+		var e = double.Parse(_reader.GetAttribute("maxlon"));
+		var s = double.Parse(_reader.GetAttribute("minlat"));
+		var w = double.Parse(_reader.GetAttribute("minlon"));
+
+		OSMData.Instance.SetBounds (n, e, s, w);
 	}
 
 	private void DrawBuildings() {
-		foreach (Way way in ways.Values) {
+				foreach (Way way in OSMData.Instance.GetWays().Values) {
 			if (!way.HasTag("building")) {
 				continue;
 			}
 			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, new Vector3(0, 0, 0), Quaternion.identity);
 			Building b = buildingObject.GetComponent<Building> ();
 			b.way = way;
-			b.vertices = way.BuildVertices(bounds).ToArray();
-			buildings.Add (b);
+			b.vertices = way.BuildVertices(OSMData.Instance.GetBounds()).ToArray();
+			GameObjectManager.Instance.AddBuilding(b);
 		}
 	}
 }
