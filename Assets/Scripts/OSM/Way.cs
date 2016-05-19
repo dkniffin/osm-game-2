@@ -27,8 +27,8 @@ namespace OSM {
 //			var earthRadius = 6371000;
 
 			foreach(Node node in nodes) {
-				var x = (float)DistanceBetween(bounds.minlat, bounds.minlon, bounds.minlat, node.longitude);
-				var y = (float)DistanceBetween(bounds.minlat, bounds.minlon, node.latitude, bounds.minlon);
+				var x = (float)DistanceBetween(bounds.s, bounds.w, bounds.s, node.longitude);
+				var y = (float)DistanceBetween(bounds.s, bounds.w, node.latitude, bounds.w);
 
 				vertices.Add(new Vector2(x, y));
 			}
