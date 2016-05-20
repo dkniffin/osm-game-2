@@ -29,6 +29,14 @@ namespace OSM
 			}
 			return false;
 		}
+
+		public string GetTag(string k) {
+			if (HasTag (k)) {
+				return tags [k];
+			} else {
+				return "";
+			}
+		}
 	}
 }
 
