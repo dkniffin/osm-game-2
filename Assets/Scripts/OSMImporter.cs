@@ -100,15 +100,18 @@ public class OSMImporter : MonoBehaviour {
 	}
 
 	private void DrawBuildings() {
-				foreach (Way way in OSMData.Instance.GetWays().Values) {
+		foreach (Way way in OSMData.Instance.GetWays().Values) {
 			if (!way.HasTag("building")) {
 				continue;
 			}
-			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+				
+			var position = way.BuildPosition(OSMData.Instance.GetBounds());
+			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, position, Quaternion.identity);
 			Building b = buildingObject.GetComponent<Building> ();
 			b.way = way;
-			b.vertices = way.BuildVertices(OSMData.Instance.GetBounds()).ToArray();
+			b.vertices = way.BuildVertices().ToArray();
 			GameObjectManager.Instance.AddBuilding(b);
+
 		}
 	}
 }
