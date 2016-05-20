@@ -1,0 +1,33 @@
+As a user, I should be able to click a building, and see it highlighted
+As a user, when I have a building selected, I should be able to see information about the building
+As a user, I should be able to click
+
+
+- "911 Minigame"
+ - I can easily identify a police station
+ - I can easily identify a fire station
+ - I can easily identify a hospital
+ - I should be able to see how many cops are in the police station
+ - I can see "events"
+ - I can see event type
+  - Break-in, riot, fire
+
+- Defense
+ - Police
+  - Crime happens
+ - Army
+  - RTS
+- Prison
+- Fire
+- Medical
+- Construction
+ - Residential
+ - Commerical
+ - Industrial
+ - Natural
+- Polution
+- Power
+- Traffic
+- Politics
+ - Trade/Commerce
+ - Treaties

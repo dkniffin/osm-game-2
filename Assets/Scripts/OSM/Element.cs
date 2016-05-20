@@ -20,6 +20,15 @@ namespace OSM
 		public Boolean HasTag(string k, string v) {
 			return HasTag (k) && tags [k] == v;
 		}
+
+		public Boolean HasTag(string k, Array vs) {
+			foreach (string v in vs) {
+				if (HasTag (k, v)) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }
 
