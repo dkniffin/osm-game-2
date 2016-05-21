@@ -3,7 +3,7 @@ using System.Collections;
 using OSM;
 
 public class EventManager : MonoBehaviour {
-	public delegate void GameEvent(string eventText);
+	public delegate void GameEvent(string eventText, Vector2 eventLocation);
 	public static event GameEvent OnGameEvent;
 
 	private float fireChance = 0.9f;
@@ -24,9 +24,9 @@ public class EventManager : MonoBehaviour {
 			if (Random.value < fireChance)
 				RandomFire ();
 			if (Random.value < crimeChance)
-				OnGameEvent ("There was a break in!");
+				OnGameEvent ("There was a break in!", new Vector2(0,0));
 			if (Random.value < medicalChance)
-				OnGameEvent ("There was a car accident!");
+				OnGameEvent ("There was a car accident!", new Vector2(0,0));
 		}
 	}
 
@@ -34,10 +34,8 @@ public class EventManager : MonoBehaviour {
 		Building b = GameObjectManager.Instance.GetRandomBuilding ();
 
 		string building_name = b.way.GetTag ("name");
-		if (building_name != "") {
-			OnGameEvent ("A fire has started in " + building_name + "!");
-		} else {
-			OnGameEvent ("A fire has started!");
-		}
+		var eventText = (building_name != "") ? "A fire has started in " + building_name + "!" : "A fire has started!";
+
+		OnGameEvent(eventText, b.way.GetPosition());
 	}
 }
