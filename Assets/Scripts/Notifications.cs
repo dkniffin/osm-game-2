@@ -36,14 +36,9 @@ public class Notifications : MonoBehaviour {
 		// Add an onClick listener for it
 		Button b = notification.GetComponent<Button>();
 		b.onClick.AddListener (delegate {
-			MoveCameraTo (eventLocation);
+			Camera.main.GetComponent<MainCamera> ().PanTo (eventLocation);
 			RemoveNotification(notification);
 		});
-	}
-
-	private void MoveCameraTo(Vector2 location) {
-		var newCameraPosition = new Vector3(location.x, location.y, Camera.main.transform.position.z);
-		Camera.main.transform.position = newCameraPosition;
 	}
 
 	private void RemoveNotification(GameObject notification) {

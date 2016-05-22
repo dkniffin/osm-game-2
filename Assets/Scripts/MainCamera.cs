@@ -52,8 +52,30 @@ public class MainCamera : MonoBehaviour {
 	public void EnableCameraMovement(){
 		canMove = true;
 	}
+		
+	public void PanTo(Vector2 target) {
+		StartCoroutine("HandlePanning", target);
+	}
+
+
+	private IEnumerator HandlePanning (Vector2 target)
+	{
+		var smoothing = 3.0f;
+		while(Vector2.Distance(transform.position, target) > 0.05f)
+		{
+			var pos = Vector2.Lerp(transform.position, target, smoothing * Time.deltaTime);
+			transform.position = new Vector3 (pos.x, pos.y, transform.position.z);
+
+			yield return null;
+		}
+		StopCoroutine ("HandlePanning");
+	}
 
 	private void MoveCamera() {
+		if (Input.anyKey) {
+			StopCoroutine ("HandlePanning");
+		}
+
 		// Zoom Out
 		if (Input.GetAxis("Mouse ScrollWheel") > 0) {
 			if (Camera.main.fieldOfView < cameraDistanceMax) {
