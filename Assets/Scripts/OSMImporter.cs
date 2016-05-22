@@ -104,9 +104,10 @@ public class OSMImporter : MonoBehaviour {
 			if (!way.HasTag("building")) {
 				continue;
 			}
-				
+
 			var position = way.BuildPosition(OSMData.Instance.GetBounds());
 			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, position, Quaternion.identity);
+			buildingObject.AddComponent<UIController> ();
 			Building b = buildingObject.GetComponent<Building> ();
 			b.way = way;
 			b.vertices = way.BuildVertices().ToArray();

@@ -42,7 +42,7 @@ namespace OSM {
 		}
 
 		// This method takes in the map bounds, and scales the current way so that origin is in the southwest corner of the bounds
-		// 
+		//
 		public List<Vector2> BuildVertices() {
 			List<Vector2> vertices = new List<Vector2> ();
 
@@ -51,7 +51,7 @@ namespace OSM {
 				if (CenterLon () > node.longitude) {
 					x = 0 - x;
 				}
-					
+
 				var y = (float)DistanceBetween(CenterLat(), CenterLon(), node.latitude, CenterLon());
 				if (CenterLat () > node.latitude) {
 					y = 0 - y;
@@ -79,7 +79,7 @@ namespace OSM {
 			} else if (HasTag ("amenity", new[]{"hospital", "doctors", "dentist", "clinic", "pharmacy", "veterinary"})) {
 				return "medical";
 			} else {
-				return "unknown";
+				return "building";
 			}
 		}
 
@@ -105,7 +105,7 @@ namespace OSM {
 			}
 			return centerLon;
 		}
-			
+
 		private double DistanceBetween(double lat1, double lon1, double lat2, double lon2) {
 			var earthRadius = 6378137; // earth radius in meters
 			var d2r = Math.PI / 180;

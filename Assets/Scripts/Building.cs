@@ -9,18 +9,33 @@ public class Building : MonoBehaviour {
 	private MeshFilter meshFilter;
 	private PolygonCollider2D polyCollider;
 	private MeshRenderer meshRenderer;
+	public static readonly string[] TogglableTags = { "building_fire_department", "building_police" };
+	private UIController ui;
+
 
 	// Use this for initialization
 	void Start () {
+		ui = GetComponent<UIController> ();
 		meshFilter = GetComponent<MeshFilter> ();
 		polyCollider = GetComponent<PolygonCollider2D> ();
 		meshRenderer = GetComponent<MeshRenderer> ();
 		UpdateMesh ();
 		UpdateMaterial ();
+		UpdateTag ();
 	}
 
-	void OnMouseDown () {
-		Debug.Log ("clicked way" + way.id);
+	public static bool ContainsGUIElement (GameObject gameObject) {
+		if (System.Array.IndexOf (TogglableTags, gameObject.tag) != -1) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void OnGUI () {
+		if(ContainsGUIElement(gameObject)) {
+		 	ui.CreatePopUpMenu (gameObject);
+		}
 	}
 
 	public void UpdateMesh() {
@@ -56,5 +71,10 @@ public class Building : MonoBehaviour {
 			{ "unknown", (Material) Resources.Load ("Materials/Building/Default") }
 		};
 		meshRenderer.material = materialMap [way.BuildingType ()];
+	}
+
+	private void UpdateTag() {
+		 var type = way.BuildingType ();
+		 gameObject.tag = (type == "unknown") ? "building" :  "building_" + type;
 	}
 }

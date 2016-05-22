@@ -20,18 +20,15 @@ public class MainCamera : MonoBehaviour {
 	public float cameraDistanceMin = 40f;
 	public float cameraDistanceMax = 100f;
 
-
 	// Use this for initialization
 	void Start () {
 	  mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
-	  vertExtent = mainCamera.GetComponent<Camera>().orthographicSize;    
+	  vertExtent = mainCamera.GetComponent<Camera>().orthographicSize;
 	  horzExtent = vertExtent * Screen.width / Screen.height;
 
-	  // Calculations assume map is position at the origin
-	  minX = horzExtent - mapX / 2.0f;
-	  maxX = mapX / 2.0f - horzExtent;
-	  minY = vertExtent - mapY / 2.0f;
-	  maxY = mapY / 2.0f - vertExtent;
+	}
+
+	void Update() {
 	}
 
 	// Update is called once per frame
@@ -60,14 +57,12 @@ public class MainCamera : MonoBehaviour {
 				Camera.main.fieldOfView += scrollSpeed;
 			}
 		}
-			
 		// Zoom In
 		if (Input.GetAxis ("Mouse ScrollWheel") < 0) {
 			if (Camera.main.fieldOfView > cameraDistanceMin) {
 				Camera.main.fieldOfView -= scrollSpeed;
 			}
 		}
-
 		// Pan Up
 		if (Input.GetKey(KeyCode.W)) {
 			if (maxY < mainCamera.transform.position.y) {
