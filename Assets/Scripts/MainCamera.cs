@@ -61,8 +61,7 @@ public class MainCamera : MonoBehaviour {
 	private IEnumerator HandlePanning (Vector2 target)
 	{
 		var smoothing = 3.0f;
-		while(Vector2.Distance(transform.position, target) > 0.05f)
-		{
+		while(Vector2.Distance(transform.position, target) > 0.05f) {
 			var pos = Vector2.Lerp(transform.position, target, smoothing * Time.deltaTime);
 			transform.position = new Vector3 (pos.x, pos.y, transform.position.z);
 

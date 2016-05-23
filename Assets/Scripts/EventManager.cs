@@ -6,7 +6,7 @@ public class EventManager : MonoBehaviour {
 	public delegate void GameEvent(string eventText, Vector2 eventLocation);
 	public static event GameEvent OnGameEvent;
 
-	private float fireChance = 0.9f;
+	private float fireChance = 0.1f;
 	private float crimeChance = 0.1f;
 	private float medicalChance = 0.1f;
 
@@ -24,9 +24,9 @@ public class EventManager : MonoBehaviour {
 			if (Random.value < fireChance)
 				RandomFire ();
 			if (Random.value < crimeChance)
-				OnGameEvent ("There was a break in!", new Vector2(0,0));
+				RandomCrime ();
 			if (Random.value < medicalChance)
-				OnGameEvent ("There was a car accident!", new Vector2(0,0));
+				RandomMedical ();
 		}
 	}
 
@@ -37,5 +37,18 @@ public class EventManager : MonoBehaviour {
 		var eventText = (building_name != "") ? "A fire has started in " + building_name + "!" : "A fire has started!";
 
 		OnGameEvent(eventText, b.way.GetPosition());
+	}
+
+	void RandomCrime() {
+		OnGameEvent ("There was a break in!", RandomPosition());
+	}
+
+	void RandomMedical() {
+		OnGameEvent ("There was a car accident!", RandomPosition());
+	}
+
+	private Vector2 RandomPosition() {
+		// TODO: Don't hardcode bounds
+		return new Vector2(Random.Range(0.0f, 2000.0f), Random.Range(0.0f, 2000.0f));
 	}
 }

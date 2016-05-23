@@ -42,17 +42,46 @@ public class Notifications : MonoBehaviour {
 	}
 
 	private void RemoveNotification(GameObject notification) {
+		var i = notifications.IndexOf (notification);
 		notification.SetActive(false);
-		notifications.Remove (notification);
+		notifications.RemoveAt (i);
 		UpdatePositions ();
 	}
 
-	private void UpdatePositions() {
+	private void UpdatePositions () {
 		currentYPosition = 0.0f;
 		foreach (GameObject n in notifications) {
 			SetPosition (n);
 		}
 	}
+
+	/*
+	 * This *almost* works. There's some issues with overlapping buttons, after a few notifications are clicked.
+	private void UpdatePositionsSlide(int indexOfRemoval) {
+		var numberToMove = (notifications.Count - indexOfRemoval);
+		var notificationsToBeMoved = notifications.GetRange (indexOfRemoval, numberToMove);
+
+		var buttonHeight = notificationPrefab.GetComponent<RectTransform> ().rect.height;
+		currentYPosition = 0.0f - (indexOfRemoval * buttonHeight);
+
+		foreach (GameObject n in notificationsToBeMoved) {
+			StartCoroutine(SlideNotification(n, currentYPosition));
+			currentYPosition -= buttonHeight;
+		}
+	}
+
+	private IEnumerator SlideNotification (GameObject notification, float targetY)
+	{
+		var smoothing = 3.0f;
+		while(Mathf.Abs(notification.transform.localPosition.y - targetY) > 0.01f) {
+			var y = Mathf.Lerp (notification.transform.localPosition.y, targetY, smoothing * Time.deltaTime);
+			notification.transform.localPosition = new Vector3 (notification.transform.localPosition.x, y, notification.transform.localPosition.z);
+
+			yield return null;
+		}
+		StopCoroutine ("SlideNotification");
+	}
+	*/
 
 	private void SetPosition(GameObject notification) {
 		var pos = notification.transform.localPosition;
