@@ -19,10 +19,6 @@ public class Building : MonoBehaviour {
 		UpdateMaterial ();
 	}
 
-	void OnMouseDown () {
-		Debug.Log ("clicked way" + way.id);
-	}
-
 	public void UpdateMesh() {
 		Mesh mesh = new Mesh ();
 		meshFilter.mesh = mesh;
