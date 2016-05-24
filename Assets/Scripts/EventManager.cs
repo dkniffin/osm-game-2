@@ -36,19 +36,29 @@ public class EventManager : MonoBehaviour {
 		string building_name = b.way.GetTag ("name");
 		var eventText = (building_name != "") ? "A fire has started in " + building_name + "!" : "A fire has started!";
 
-		OnGameEvent(eventText, b.way.GetPosition());
+		var position = b.way.GetPosition ();
+		DrawIcon((GameObject)Resources.Load ("Prefabs/fire"), position);
+		OnGameEvent(eventText, position);
 	}
 
 	void RandomCrime() {
-		OnGameEvent ("There was a break in!", RandomPosition());
+		var position = RandomPosition ();
+		DrawIcon((GameObject)Resources.Load ("Prefabs/break-in"), position);
+		OnGameEvent ("There was a break in!", position);
 	}
 
 	void RandomMedical() {
-		OnGameEvent ("There was a car accident!", RandomPosition());
+		var position = RandomPosition ();
+		DrawIcon((GameObject)Resources.Load ("Prefabs/car-accident"), position);
+		OnGameEvent ("There was a car accident!", position);
 	}
 
 	private Vector2 RandomPosition() {
 		// TODO: Don't hardcode bounds
 		return new Vector2(Random.Range(0.0f, 2000.0f), Random.Range(0.0f, 2000.0f));
+	}
+
+	private void DrawIcon(GameObject iconPrefab, Vector2 position) {
+		Instantiate (iconPrefab, position, Quaternion.identity);
 	}
 }
