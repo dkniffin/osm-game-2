@@ -25,11 +25,7 @@ public class Building : MonoBehaviour {
 	}
 
 	public static bool ContainsGUIElement (GameObject gameObject) {
-		if (System.Array.IndexOf (TogglableTags, gameObject.tag) != -1) {
-			return true;
-		} else {
-			return false;
-		}
+		return (System.Array.IndexOf (TogglableTags, gameObject.tag) != -1);
 	}
 
 	void OnGUI () {
