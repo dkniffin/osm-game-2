@@ -16,6 +16,8 @@ namespace OSM {
 		private double centerLat = 1000.0;
 		private double centerLon = 1000.0;
 
+		private Vector3 position;
+
 		public Way () {
 			nodes = new List<Node> ();
 		}
@@ -64,11 +66,14 @@ namespace OSM {
 			return vertices;
 		}
 
-		public Vector3 BuildPosition(LatLonBounds bounds) {
-			var x = (float)DistanceBetween(bounds.s, bounds.w, bounds.s, CenterLon());
-			var y = (float)DistanceBetween(bounds.s, bounds.w, CenterLat(), bounds.w);
+		public void BuildPosition(LatLonBounds bounds) {
+			var x = (float)DistanceBetween (bounds.s, bounds.w, bounds.s, CenterLon ());
+			var y = (float)DistanceBetween (bounds.s, bounds.w, CenterLat (), bounds.w);
+			position = new Vector3 (x, y, 0);
+		}
 
-			return new Vector3(x, y, 0);
+		public Vector3 GetPosition() {
+			return position;
 		}
 
 		public string BuildingType() {
@@ -79,7 +84,7 @@ namespace OSM {
 			} else if (HasTag ("amenity", new[]{"hospital", "doctors", "dentist", "clinic", "pharmacy", "veterinary"})) {
 				return "medical";
 			} else {
-				return "building";
+				return "unknown";
 			}
 		}
 

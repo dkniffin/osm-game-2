@@ -105,8 +105,10 @@ public class OSMImporter : MonoBehaviour {
 				continue;
 			}
 
-			var position = way.BuildPosition(OSMData.Instance.GetBounds());
-			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, position, Quaternion.identity);
+
+			way.BuildPosition (OSMData.Instance.GetBounds());
+
+			GameObject buildingObject = (GameObject)Instantiate (buildingPrefab, way.GetPosition(), Quaternion.identity);
 			buildingObject.AddComponent<UIController> ();
 			Building b = buildingObject.GetComponent<Building> ();
 			b.way = way;
